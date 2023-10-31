@@ -1,0 +1,53 @@
+//config
+var telegtoken = "5820228498:AAE-EDMkG0WsflJqyIsPexl2oYcGEjw6NrU"; // dari botfather
+var appUrl = "https://script.google.com/macros/s/AKfycbz7ITznSLcL77KhkfveoRTBsLUVZvCjQScpJvD4yHr1PvQ_84tplp-VVsPXi-MU_orjgw/exec"; //macro dari deployan google script
+var apiUrl = "https://api.telegram.org/bot"+telegtoken;
+var spreadsheet= "1q9Rwb9y9gUCiptuigW1sNgbjFLHgIpu0B38VTYGt9FE"; // link spreadheeeeet
+
+var sheetId = SpreadsheetApp.openById(spreadsheet).getSheetByName("Liist");
+var Direction = SpreadsheetApp.Direction;
+var xcol = 15;
+var sheetRange = sheetId.getRange(1,xcol).getNextDataCell(Direction.DOWN).getRow()+1;
+var sheetRangev2 = sheetId.getRange(1,xcol).getNextDataCell(Direction.DOWN).getRow();
+var colval=sheetId.getRange(sheetRange,xcol).getValue(); //get column value
+
+//webhook
+function sendTeleg(){
+
+//ambil data dari spreadsheet
+var A1 = sheetId.getRange("A"+sheetRange) .getValue()
+var A2 = sheetId.getRange("B"+sheetRange).getValue()
+var A3 = sheetId.getRange("C"+sheetRange).getValue()
+var A4 = sheetId.getRange("D"+sheetRange).getValue()
+var KIRIM = sheetId.getRange("O"+sheetRange).getDisplayValue()
+
+//ambil data nextline biar ga duplikat
+if(A1!=''&&A2!=''&&A3!=''&&A4!=''&&KIRIM!='Sent'){
+  var textz = '\n'+A1
+              +'\n'+A2
+              +'\n'+A3
+              +'\n'+A4
+              +'\n'+KIRIM
+              +'\n'+colval;
+
+//send to telegram bot
+  Logger.log(textz) //buat liat log successnya optional
+	//payload = data yang akan dikirim
+      var payload = {
+        'method' : 'sendMessage',
+        'chat_id' : "-882510918", // cara nyari group chat id https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
+        'text' : textz,
+        'parse_mode' : "HTML"
+      }
+      var data = {
+        "method" : "post",
+        "payload" : payload
+      }
+
+      var url = apiUrl + '/';
+      UrlFetchApp.fetch(url,data);
+      sheetId.getRange("O"+sheetRange).setValue("Sent")
+
+}
+
+}
